@@ -3,163 +3,285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Water Intelligence</title>
+<title>Smart Water Quality</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- Scroll Reveal -->
+<script src="https://unpkg.com/scrollreveal"></script>
 
 <style>
-body {
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
 font-family:'Poppins',sans-serif;
-background:black;
-color:white;
-overflow:hidden;
 }
 
-/* 🌊 Animated gradient background */
-body::before{
-content:'';
+body{
+background:linear-gradient(120deg,#001f3f,#0074D9);
+color:white;
+overflow-x:hidden;
+}
+
+/* 🌊 Animated Background */
+.wave{
 position:fixed;
 width:200%;
 height:200%;
-background:radial-gradient(circle,#00f7ff33,transparent 70%);
-animation:move 10s infinite linear;
+background:rgba(255,255,255,0.05);
+top:-50%;
+left:-50%;
+border-radius:40%;
+animation:rotate 20s linear infinite;
 z-index:-1;
 }
 
-@keyframes move{
-0%{transform:translate(-20%,-20%)}
-50%{transform:translate(20%,20%)}
-100%{transform:translate(-20%,-20%)}
+.wave:nth-child(2){
+animation-duration:30s;
+opacity:0.3;
 }
 
-/* center */
+@keyframes rotate{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+/* Container */
 .container{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
+max-width:900px;
+margin:60px auto;
+padding:20px;
 }
 
-/* title */
+/* Glass Card */
+.card{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+border-radius:20px;
+padding:30px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px) scale(1.01);
+}
+
+/* Heading */
 h1{
-font-size:40px;
-opacity:0;
+text-align:center;
+margin-bottom:10px;
+font-size:32px;
 }
 
-/* button */
-button{
-padding:15px 30px;
-margin-top:20px;
+.sub{
+text-align:center;
+margin-bottom:30px;
+opacity:0.8;
+}
+
+/* Grid */
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+/* Inputs */
+.input-box{
+display:flex;
+flex-direction:column;
+}
+
+label{
+margin-bottom:5px;
+font-size:14px;
+}
+
+input{
+padding:12px;
 border:none;
-border-radius:30px;
-background:#00f7ff;
-color:black;
+border-radius:10px;
+outline:none;
+font-size:16px;
+}
+
+/* Button */
+button{
+margin-top:25px;
+padding:14px;
+width:100%;
+border:none;
+border-radius:12px;
+background:#00c6ff;
+color:white;
 font-size:18px;
 cursor:pointer;
 transition:0.3s;
 }
 
 button:hover{
-box-shadow:0 0 30px #00f7ff;
-transform:scale(1.1);
+background:#00aaff;
+box-shadow:0 0 20px #00c6ff;
 }
 
-/* panel */
-.panel{
-position:fixed;
-bottom:-100%;
-left:50%;
-transform:translateX(-50%);
-width:90%;
-max-width:400px;
-background:rgba(255,255,255,0.1);
-backdrop-filter:blur(15px);
-padding:20px;
-border-radius:20px;
-transition:0.5s;
-}
-
-/* inputs */
-input{
-width:100%;
-padding:10px;
-margin:8px 0;
-border-radius:10px;
-border:none;
-}
-
-/* result */
+/* Result */
 .result{
-margin-top:10px;
-font-size:18px;
+margin-top:25px;
+padding:20px;
+border-radius:15px;
+display:none;
+animation:fadeIn 0.6s ease;
+}
+
+.safe{background:#2ecc71;}
+.medium{background:#f1c40f;}
+.unsafe{background:#e74c3c;}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* Bars */
+.bar{
+margin-top:15px;
+}
+
+.progress{
+height:10px;
+background:#ddd;
+border-radius:10px;
+overflow:hidden;
+margin-top:5px;
+}
+
+.fill{
+height:100%;
+background:white;
+transition:1s;
+}
+
+/* Responsive */
+@media(max-width:700px){
+.grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
 
 <body>
 
+<div class="wave"></div>
+<div class="wave"></div>
+
 <div class="container">
-<h1 id="title">💧 WATER INTELLIGENCE</h1>
-<button onclick="openPanel()">Start Analysis</button>
+
+<div class="card" id="mainCard">
+<h1>💧 Smart Water Analyzer</h1>
+<p class="sub">Interactive Water Quality Monitoring System</p>
+
+<div class="grid">
+
+<div class="input-box">
+<label>pH Value</label>
+<input type="number" id="ph" step="0.1">
 </div>
 
-<div class="panel" id="panel">
-<input type="number" id="ph" placeholder="pH">
-<input type="number" id="tds" placeholder="TDS">
-<input type="number" id="temp" placeholder="Temperature">
-<input type="number" id="turbidity" placeholder="Turbidity">
+<div class="input-box">
+<label>Turbidity (NTU)</label>
+<input type="number" id="turbidity">
+</div>
 
-<button onclick="checkWater()">Check Water</button>
+<div class="input-box">
+<label>Temperature (°C)</label>
+<input type="number" id="temp">
+</div>
+
+<div class="input-box">
+<label>TDS (ppm)</label>
+<input type="number" id="tds">
+</div>
+
+</div>
+
+<button onclick="checkWater()">Analyze Water</button>
 
 <div class="result" id="result"></div>
+
+</div>
+
 </div>
 
 <script>
 
-/* Title animation */
-gsap.to("#title",{opacity:1,y:-20,duration:2});
+/* Scroll Animation */
+ScrollReveal().reveal('#mainCard',{
+distance:'50px',
+duration:1200,
+origin:'bottom'
+});
 
-/* Open panel */
-function openPanel(){
-document.getElementById("panel").style.bottom="20px";
-}
-
-/* Water check */
+/* Logic */
 function checkWater(){
 let ph = parseFloat(document.getElementById("ph").value);
-let tds = parseFloat(document.getElementById("tds").value);
-let temp = parseFloat(document.getElementById("temp").value);
 let turbidity = parseFloat(document.getElementById("turbidity").value);
+let temp = parseFloat(document.getElementById("temp").value);
+let tds = parseFloat(document.getElementById("tds").value);
 
 let result = document.getElementById("result");
 
-if(isNaN(ph)||isNaN(tds)||isNaN(temp)||isNaN(turbidity)){
-result.innerHTML="⚠ Enter all values";
+if(isNaN(ph)||isNaN(turbidity)||isNaN(temp)||isNaN(tds)){
+alert("Enter all values");
 return;
 }
 
 let score = 0;
 
-if(ph>=6.5 && ph<=8.5) score++;
-if(tds<300) score++;
-if(temp>=15 && temp<=30) score++;
-if(turbidity<=5) score++;
+if(ph >= 6.5 && ph <= 8.5) score++;
+if(turbidity <= 5) score++;
+if(temp >= 15 && temp <= 30) score++;
+if(tds <= 300) score++;
 
-if(score==4){
-result.innerHTML="✅ SAFE WATER";
+let status="", color="", suggestion="";
+
+if(score == 4){
+status="✅ SAFE WATER";
+suggestion="Water is safe for drinking.";
+color="safe";
 }
-else if(score>=2){
-result.innerHTML="⚠ NEEDS FILTRATION";
+else if(score >=2){
+status="⚠ NEEDS FILTRATION";
+suggestion="Filter or boil before use.";
+color="medium";
 }
 else{
-result.innerHTML="❌ UNSAFE WATER";
-}
+status="❌ UNSAFE WATER";
+suggestion="Do not drink this water.";
+color="unsafe";
 }
 
+result.style.display="block";
+result.className="result "+color;
+
+result.innerHTML = `
+<h2>${status}</h2>
+<p>${suggestion}</p>
+
+<div class="bar">pH
+<div class="progress"><div class="fill" style="width:${ph/14*100}%"></div></div></div>
+
+<div class="bar">Turbidity
+<div class="progress"><div class="fill" style="width:${Math.min(turbidity*10,100)}%"></div></div></div>
+
+<div class="bar">Temperature
+<div class="progress"><div class="fill" style="width:${Math.min(temp*3,100)}%"></div></div></div>
+
+<div class="bar">TDS
+<div class="progress"><div class="fill" style="width:${Math.min(tds/10,100)}%"></div></div></div>
+`;
+}
 </script>
 
 </body>
