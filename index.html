@@ -7,28 +7,36 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 <style>
 body {
 margin:0;
-overflow:hidden;
 font-family:'Poppins',sans-serif;
 background:black;
 color:white;
+overflow:hidden;
 }
 
-/* Canvas Background */
-#bg {
+/* 🌊 Animated gradient background */
+body::before{
+content:'';
 position:fixed;
-top:0;
-left:0;
+width:200%;
+height:200%;
+background:radial-gradient(circle,#00f7ff33,transparent 70%);
+animation:move 10s infinite linear;
 z-index:-1;
 }
 
-/* Center Content */
-.content {
+@keyframes move{
+0%{transform:translate(-20%,-20%)}
+50%{transform:translate(20%,20%)}
+100%{transform:translate(-20%,-20%)}
+}
+
+/* center */
+.container{
 position:absolute;
 top:50%;
 left:50%;
@@ -36,15 +44,16 @@ transform:translate(-50%,-50%);
 text-align:center;
 }
 
-h1 {
-font-size:50px;
-letter-spacing:2px;
+/* title */
+h1{
+font-size:40px;
 opacity:0;
 }
 
-button {
-margin-top:30px;
+/* button */
+button{
 padding:15px 30px;
+margin-top:20px;
 border:none;
 border-radius:30px;
 background:#00f7ff;
@@ -54,14 +63,14 @@ cursor:pointer;
 transition:0.3s;
 }
 
-button:hover {
+button:hover{
 box-shadow:0 0 30px #00f7ff;
 transform:scale(1.1);
 }
 
-/* Input Panel */
-.panel {
-position:absolute;
+/* panel */
+.panel{
+position:fixed;
 bottom:-100%;
 left:50%;
 transform:translateX(-50%);
@@ -71,18 +80,21 @@ background:rgba(255,255,255,0.1);
 backdrop-filter:blur(15px);
 padding:20px;
 border-radius:20px;
+transition:0.5s;
 }
 
-input {
+/* inputs */
+input{
 width:100%;
-margin:8px 0;
 padding:10px;
+margin:8px 0;
 border-radius:10px;
 border:none;
 }
 
-.result {
-margin-top:15px;
+/* result */
+.result{
+margin-top:10px;
 font-size:18px;
 }
 </style>
@@ -90,11 +102,9 @@ font-size:18px;
 
 <body>
 
-<canvas id="bg"></canvas>
-
-<div class="content">
+<div class="container">
 <h1 id="title">💧 WATER INTELLIGENCE</h1>
-<button onclick="openPanel()">Analyze Water</button>
+<button onclick="openPanel()">Start Analysis</button>
 </div>
 
 <div class="panel" id="panel">
@@ -102,62 +112,48 @@ font-size:18px;
 <input type="number" id="tds" placeholder="TDS">
 <input type="number" id="temp" placeholder="Temperature">
 <input type="number" id="turbidity" placeholder="Turbidity">
-<button onclick="checkWater()">Check</button>
+
+<button onclick="checkWater()">Check Water</button>
+
 <div class="result" id="result"></div>
 </div>
 
 <script>
 
-/* 🌌 3D PARTICLES */
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("bg")});
-
-renderer.setSize(innerWidth, innerHeight);
-camera.position.z = 5;
-
-const geometry = new THREE.BufferGeometry();
-const vertices = [];
-
-for(let i=0;i<5000;i++){
-vertices.push(
-(Math.random()-0.5)*10,
-(Math.random()-0.5)*10,
-(Math.random()-0.5)*10
-);
-}
-
-geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3));
-
-const material = new THREE.PointsMaterial({color:0x00f7ff});
-const particles = new THREE.Points(geometry,material);
-
-scene.add(particles);
-
-function animate(){
-requestAnimationFrame(animate);
-particles.rotation.y += 0.0005;
-renderer.render(scene,camera);
-}
-animate();
-
-/* ✨ TEXT ANIMATION */
+/* Title animation */
 gsap.to("#title",{opacity:1,y:-20,duration:2});
 
-/* PANEL OPEN */
+/* Open panel */
 function openPanel(){
-gsap.to("#panel",{bottom:"20px",duration:1});
+document.getElementById("panel").style.bottom="20px";
 }
 
-/* WATER LOGIC */
+/* Water check */
 function checkWater(){
-let ph = ph.value;
-let tds = tds.value;
+let ph = parseFloat(document.getElementById("ph").value);
+let tds = parseFloat(document.getElementById("tds").value);
+let temp = parseFloat(document.getElementById("temp").value);
+let turbidity = parseFloat(document.getElementById("turbidity").value);
 
 let result = document.getElementById("result");
 
-if(ph>=6.5 && ph<=8.5 && tds<300){
+if(isNaN(ph)||isNaN(tds)||isNaN(temp)||isNaN(turbidity)){
+result.innerHTML="⚠ Enter all values";
+return;
+}
+
+let score = 0;
+
+if(ph>=6.5 && ph<=8.5) score++;
+if(tds<300) score++;
+if(temp>=15 && temp<=30) score++;
+if(turbidity<=5) score++;
+
+if(score==4){
 result.innerHTML="✅ SAFE WATER";
+}
+else if(score>=2){
+result.innerHTML="⚠ NEEDS FILTRATION";
 }
 else{
 result.innerHTML="❌ UNSAFE WATER";
